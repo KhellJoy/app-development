@@ -1,24 +1,36 @@
-// calculator-v1.js
+// calculator-v3.js
 
 const readline = require("readline");
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
 function ask(q) { return new Promise(res => rl.question(q, res)); }
-const parseNum = n => { const x = Number(n); if (isNaN(x)) throw new Error("Invalid number."); return x; };
+
+class Calculator {
+  constructor(a, b) { this.a = a; this.b = b; }
+  add() { return this.a + this.b; }
+  subtract() { return this.a - this.b; }
+  multiply() { return this.a * this.b; }
+  divide() { if (this.b === 0) throw new Error("Cannot divide by zero."); return this.a / this.b; }
+  average() { return (this.a + this.b) / 2; }
+}
 
 async function main() {
   console.log("===== CALCULATOR =====\n");
 
   while (true) {
     try {
-      const a = parseNum(await ask("Enter first number: "));
-      const b = parseNum(await ask("Enter second number: "));
+      const a = Number(await ask("Enter first number: "));
+      const b = Number(await ask("Enter second number: "));
+      if (isNaN(a) || isNaN(b)) throw new Error("Invalid number.");
 
-      console.log(`${a} + ${b} = ${a + b}`);
-      console.log(`${a} - ${b} = ${a - b}`);
-      console.log(`${a} * ${b} = ${a * b}`);
-      console.log(`${a} / ${b} = ${b === 0 ? "Error (divide by 0)" : a / b}`);
-      console.log(`Average of ${a} and ${b} = ${(a + b) / 2}\n`);
+      const calc = new Calculator(a, b);
+
+      console.log("\nResults:");
+      console.log(`${a} + ${b} = ${calc.add()}`);
+      console.log(`${a} - ${b} = ${calc.subtract()}`);
+      console.log(`${a} * ${b} = ${calc.multiply()}`);
+      console.log(`${a} / ${b} = ${b === 0 ? "Error (divide by 0)" : calc.divide()}`);
+      console.log(`Average of ${a} and ${b} = ${calc.average()}\n`);
 
       const cont = await ask("Do you want to continue? (y/n): ");
       if (cont.toLowerCase() !== "y") break;
