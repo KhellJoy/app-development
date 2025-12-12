@@ -4,7 +4,12 @@ const readline = require("readline");
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
 function ask(q) { return new Promise(res => rl.question(q, res)); }
-function toNum(n) { const x = Number(n); if (isNaN(x)) throw new Error("Invalid number."); return x; }
+
+function toNum(n) { 
+  const x = Number(n); 
+  if (isNaN(x)) throw new Error("Invalid number."); 
+  return x; 
+}
 
 function add(nums) { return nums.reduce((a, b) => a + b, 0); }
 function subtract(nums) { return nums.slice(1).reduce((a, b) => a - b, nums[0]); }
@@ -15,6 +20,7 @@ function divide(nums) {
     return a / b;
   }, nums[0]);
 }
+
 function average(nums) { return add(nums) / nums.length; }
 
 function formatExpression(nums, operator, result) {
