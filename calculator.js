@@ -1,17 +1,30 @@
-// calculator-v3.js
+// calculator-v4.js - handles multiple numbers
 
 const readline = require("readline");
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
 function ask(q) { return new Promise(res => rl.question(q, res)); }
 
-class Calculator {
-  constructor(a, b) { this.a = a; this.b = b; }
-  add() { return this.a + this.b; }
-  subtract() { return this.a - this.b; }
-  multiply() { return this.a * this.b; }
-  divide() { if (this.b === 0) throw new Error("Cannot divide by zero."); return this.a / this.b; }
-  average() { return (this.a + this.b) / 2; }
+function toNum(n) { 
+  const x = Number(n); 
+  if (isNaN(x)) throw new Error("Invalid number."); 
+  return x; 
+}
+
+function add(nums) { return nums.reduce((a, b) => a + b, 0); }
+function subtract(nums) { return nums.slice(1).reduce((a, b) => a - b, nums[0]); }
+function multiply(nums) { return nums.reduce((a, b) => a * b, 1); }
+function divide(nums) {
+  return nums.slice(1).reduce((a, b) => {
+    if (b === 0) throw new Error("Cannot divide by zero.");
+    return a / b;
+  }, nums[0]);
+}
+
+function average(nums) { return add(nums) / nums.length; }
+
+function formatExpression(nums, operator, result) {
+  return nums.join(` ${operator} `) + ` = ${result}`;
 }
 
 async function main() {
@@ -19,18 +32,15 @@ async function main() {
 
   while (true) {
     try {
-      const a = Number(await ask("Enter first number: "));
-      const b = Number(await ask("Enter second number: "));
-      if (isNaN(a) || isNaN(b)) throw new Error("Invalid number.");
-
-      const calc = new Calculator(a, b);
+      const input = await ask("Enter numbers separated by space (ex: 5 10 2): ");
+      const nums = input.split(/\s+/).map(toNum);
 
       console.log("\nResults:");
-      console.log(`${a} + ${b} = ${calc.add()}`);
-      console.log(`${a} - ${b} = ${calc.subtract()}`);
-      console.log(`${a} * ${b} = ${calc.multiply()}`);
-      console.log(`${a} / ${b} = ${b === 0 ? "Error (divide by 0)" : calc.divide()}`);
-      console.log(`Average of ${a} and ${b} = ${calc.average()}\n`);
+      console.log(formatExpression(nums, "+", add(nums)));
+      console.log(formatExpression(nums, "-", subtract(nums)));
+      console.log(formatExpression(nums, "*", multiply(nums)));
+      console.log(formatExpression(nums, "/", divide(nums)));
+      console.log(`Average of [${nums.join(", ")}] = ${average(nums)}\n`);
 
       const cont = await ask("Do you want to continue? (y/n): ");
       if (cont.toLowerCase() !== "y") break;
